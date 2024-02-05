@@ -1,0 +1,18 @@
+{
+  "name": "azure-devops-bpmn-tooling",
+  "version": "1.0.0",
+  "description": "Azure DevOps extension facilitating work with BPMN models",
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "package-extension": "tfx extension create --manifest-globs vss-extension.json src/**/*.json",
+    "publish-extension": "tfx extension publish --manifest-globs vss-extension.json src/**/*.json"
+  },
+  "author": "Grzegorz Sobczak",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "tfx-cli": "^0.16.0"
+  }
+}
