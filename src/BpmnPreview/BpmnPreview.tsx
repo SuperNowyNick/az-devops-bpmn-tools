@@ -12,10 +12,7 @@ import "azure-devops-ui/Core/override.css";
 import './BpmnPreview.scss';
 
 import ReactBpmn from "../ReactBpmn/ReactBpmn";
-
-export interface IBpmnPreviewState {
-    bpmn? : string;
-}
+import style from "./variables.module.scss";
 
 function BpmnPreview() {
     const [bpmn, setBpmn] = React.useState({ bpmn: null })
@@ -34,7 +31,7 @@ function BpmnPreview() {
     return (
         <SurfaceContext.Provider value={{ background: SurfaceBackground.normal }}>
             <Page className="bpmn-preview">
-                <ReactBpmn diagramXML={bpmn}/>
+                <ReactBpmn diagramXML={bpmn} style={{ fillColor: style.neutral2, strokeColor: style.text, labelColor: style.text }}/>
             </Page>
         </SurfaceContext.Provider>
     );

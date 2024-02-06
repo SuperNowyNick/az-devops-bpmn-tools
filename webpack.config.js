@@ -45,13 +45,28 @@ module.exports = {
               use: ["style-loader", "css-loader"],
             },
             {
-                test: /\.s[ac]ss$/i,
-                use: ["style-loader", "css-loader",  "sass-loader", "azure-devops-ui/buildScripts/css-variables-loader"]
+              test: /\.scss$/,
+              exclude: /\.module\.scss$/,
+              use: [ 
+                { loader: "style-loader" },
+                { loader: "css-loader" },
+                { loader: "sass-loader" },
+                { loader: "azure-devops-ui/buildScripts/css-variables-loader" }
+               ],
+            },
+            {
+              test: /\.module\.scss$/,
+              use: [ 
+                { loader: "style-loader" },
+                { loader: "css-modules-typescript-loader"},
+                { loader: "css-loader", options: { modules: true } },
+                { loader: "sass-loader" }
+               ],
             },
             {
                 test: /\.woff$/,
                 use: [{
-                    loader: 'base64-inline-loader'
+                    loader: "base64-inline-loader"
                 }]
             },
             {
