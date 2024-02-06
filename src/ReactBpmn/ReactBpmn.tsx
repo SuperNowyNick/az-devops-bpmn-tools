@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef } from "react";
 
-import BpmnJS from "bpmn-js/dist/bpmn-navigated-viewer.development";
+import BpmnJS from "bpmn-js/dist/bpmn-navigated-viewer.production.min";
 
 function ReactBpmn(props: { style?: { fillColor: string, strokeColor: string, labelColor: string }, diagramXML }) {
     const bpmnViewer = props.style ? new BpmnJS({
