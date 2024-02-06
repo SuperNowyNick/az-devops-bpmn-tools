@@ -1,0 +1,10 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+
+:export {
+  background: $backgroundColor;
+  neutral8: $neutral-8;
+  neutral6: $neutral-6;
+  neutral4: $neutral-4;
+  neutral2: $neutral-2;
+  text: $primary-text;
+}
