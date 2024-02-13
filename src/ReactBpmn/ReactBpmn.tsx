@@ -63,7 +63,7 @@ const ReactBpmn = memo(
       let element: keyof typeof changes;
       for (element in changes){
         try {viewer.get('canvas').addMarker(element, marker);}
-        catch (e) { console.error(e) }
+        catch (e) { }
       }
     }
 
@@ -76,6 +76,8 @@ const ReactBpmn = memo(
       {
         markChanges(bpmnViewer, props.changes._added, CHANGE_MARKERS.added);
         markChanges(bpmnViewer, props.changes._removed, CHANGE_MARKERS.removed);
+        markChanges(bpmnViewer, props.changes._changed, CHANGE_MARKERS.modified);
+        markChanges(bpmnViewer, props.changes._layoutChanged, CHANGE_MARKERS.layout);
       }
     }
 
