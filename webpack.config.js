@@ -37,6 +37,10 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.bpmn$/,
+                loader: "raw-loader"
+            },
+            {
                 test: /\.tsx?$/,
                 loader: "ts-loader"
             },

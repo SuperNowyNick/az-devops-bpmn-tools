@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "devops-bpmn-tools",
     "publisher": "SuperNowyNick",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "name": "Azure Devops BPMN tools",
     "description": "Visual Studio Services extension for BPMN files",
     "public": true,
@@ -97,5 +97,12 @@
             "addressable": true,
             "packagePath": "lib"
         }
+    ],
+    "scopes": [
+        "vso.code",
+        "vso.build"
+    ],
+    "demands": [
+        "api-version/5.1"
     ]
 }
