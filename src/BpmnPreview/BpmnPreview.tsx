@@ -24,7 +24,6 @@ import style from "../variables.module.scss";
 import EmptyBpmn from "./Empty.bpmn";
 
 const loadPreviousFile = async (pageRoute, params) => {
-
     const client = getClient(GitRestClient);
     const iterations = await client.getPullRequestIterations(
         pageRoute.routeValues.GitRepositoryName,
@@ -32,22 +31,39 @@ const loadPreviousFile = async (pageRoute, params) => {
         pageRoute.routeValues.project
     );
 
-    const iteration = params.base
-        ? iterations[params.base]
-        : iterations[0];
+    const source = params.iteration
+        ? iterations[params.iteration-1].sourceRefCommit.commitId
+        : iterations[iterations.length-1].sourceRefCommit.commitId;
+
+    const target = params.base
+        ? iterations[params.base-1].sourceRefCommit.commitId
+        : iterations[0].targetRefCommit.commitId;
+
     const buildClient = getClient(BuildRestClient);
+    let file = null as string | null;
+    let previousFile = null as string | null;
     try {
-        const file = await buildClient.getFileContents(
+        file = await buildClient.getFileContents(
             pageRoute.routeValues.project,
             "tfsGit",
             undefined,
             pageRoute.routeValues.GitRepositoryName,
-            iteration.targetRefCommit.commitId,
+            source,
             params.path
         );
-        return file;
+    } catch(e) { return {file: null, previousFile: null}; }
+    try {
+        previousFile = await buildClient.getFileContents(
+            pageRoute.routeValues.project,
+            "tfsGit",
+            undefined,
+            pageRoute.routeValues.GitRepositoryName,
+            target,
+            params.path
+        );
+        return {file, previousFile};
     } catch (e) {
-        return;
+        return {file: file, previousFile: null};
     }
 }
 
@@ -59,20 +75,29 @@ function BpmnPreview() {
         const init = async () => {
             await SDK.init();
             await SDK.ready();
+
             const fileContent = SDK.getConfiguration().content;
-            setBpmn(fileContent);
 
             const navigationService =
                 await SDK.getService<IHostNavigationService>(
                     CommonServiceIds.HostNavigationService
                 );
+
             const pageRoute = await navigationService.getPageRoute();
             const params = await navigationService.getQueryParams();
 
             if (pageRoute.id == "ms.vss-code-web.pull-request-details-route") {
-                const previousFile = await loadPreviousFile(pageRoute, params);
-                if(previousFile)
-                    setPreviousBpmn(previousFile);
+                const files = await loadPreviousFile(pageRoute, params);
+                if(files?.file)
+                    setBpmn(files.file);
+                else
+                    setBpmn(fileContent);
+                if(files?.previousFile)
+                    setPreviousBpmn(files.previousFile);
+            }
+            else
+            {
+                setBpmn(fileContent);
             }
         };
 
@@ -80,7 +105,7 @@ function BpmnPreview() {
     });
 
     const bpmnStyle = {
-        fillColor: style.neutral2,
+        fillColor: style.background,
         strokeColor: style.text,
         labelColor: style.text,
     };
@@ -93,9 +118,7 @@ function BpmnPreview() {
         );
 
     return (
-        <SurfaceContext.Provider
-            value={{ background: SurfaceBackground.normal }}
-        >
+        <SurfaceContext.Provider value={{ background: SurfaceBackground.normal }}>
             <Page className="bpmn-preview">{bpmnViewer}</Page>
         </SurfaceContext.Provider>
     );
