@@ -112,14 +112,14 @@ function BpmnPreview() {
 
     const bpmnViewer =
         previousBpmn == null ? (
-            <ReactBpmn diagramXML={bpmn} style={bpmnStyle} />
+            <Page className="bpmn-preview"><ReactBpmn diagramXML={bpmn} style={bpmnStyle} /></Page>
         ) : (
             <BpmnDiff bpmn1={bpmn} bpmn2={previousBpmn} style={bpmnStyle} />
         );
 
     return (
         <SurfaceContext.Provider value={{ background: SurfaceBackground.normal }}>
-            <Page className="bpmn-preview">{bpmnViewer}</Page>
+            {bpmnViewer}
         </SurfaceContext.Provider>
     );
 }

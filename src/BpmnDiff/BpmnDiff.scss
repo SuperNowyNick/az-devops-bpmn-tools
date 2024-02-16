@@ -1,7 +1,17 @@
 @import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 
+.property-added {
+  color: $status-success-text;
+  background-color: $status-success-background;
+}
+
+.property-removed {
+  color: $status-error-text;
+  background-color: $status-error-background;
+}
+
 .diff-removed:not(.djs-connection) .djs-visual > :nth-child(1) {
-    fill: #E56283 /* light-red */ !important;
+    fill: rgba($color: #E56283, $alpha: 0.95) /* light-red */ !important;
   }
   
   .diff-removed.djs-connection .djs-visual > :nth-child(1) {
@@ -14,7 +24,7 @@
   
   
   .diff-added:not(.djs-connection) .djs-visual > :nth-child(1) {
-    fill: #90DD5F /* light-green */!important;
+    fill: rgba(#90DD5F, 0.95) /* light-green */!important;
   }
   
   .diff-added.djs-connection .djs-visual > :nth-child(1) {
@@ -27,7 +37,7 @@
   
   
   .diff-layout-changed:not(.djs-connection) .djs-visual > :nth-child(1) {
-    fill: #4D79A3 /* light-blue */ !important;
+    fill: rgba(#4D79A3, 0.95) /* light-blue */ !important;
   }
   
   .diff-layout-changed.djs-connection .djs-visual > :nth-child(1) {
@@ -40,7 +50,7 @@
   
   
   .diff-changed:not(.djs-connection) .djs-visual > :nth-child(1) {
-    fill: #FBC16C /* light-yellow */ !important;
+    fill: rgba(#FBC16C, 0.95) /* light-yellow */ !important;
   }
   
   .diff-changed.djs-connection .djs-visual > :nth-child(1) {
