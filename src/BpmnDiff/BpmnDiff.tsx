@@ -12,13 +12,14 @@ import * as React from "react";
 import "azure-devops-ui/Core/override.css";
 import "./BpmnDiff.scss";
 
-import { IBpmnChange, getChangeItemProvider, renderRow } from "./BpmnDiffChange";
+import { getChangeItemProvider, renderRow } from "./BpmnDiffChange";
 
 import ReactBpmn, { BpmnMethods, BpmnStyle } from "../ReactBpmn/ReactBpmn";
 
 import BpmnModdle from "bpmn-moddle";
 import { diff } from "bpmn-js-differ";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
+import bpmnCompare, { BpmnDiff } from "../bpmn-compare/bpmn-compare";
 
 
 function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
@@ -26,7 +27,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     const childRef1 = React.useRef(null);
     const childRef2 = React.useRef(null);
 
-    const [changes, setChanges] = React.useState(null as any);
+    const [changes, setChanges] = React.useState(undefined as BpmnDiff | undefined);
     const [panelExpanded, setPanelExpanded] = React.useState(false);
 
     const loadDiff = async () => {
@@ -34,8 +35,8 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         const bpmn1 = await moddle.fromXML(props.bpmn1);
         const bpmn2 = await moddle.fromXML(props.bpmn2);
 
-        let bpmnDiff = diff(bpmn2.rootElement, bpmn1.rootElement);
-
+        let bpmnDiff = bpmnCompare(bpmn1, bpmn2);
+        console.log(bpmnDiff);
         if (!changes) {
             setChanges(bpmnDiff);
         }
@@ -103,7 +104,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         [changes]
     );
 
-    let itemProvider = changes ? getChangeItemProvider(changes._changed) : new ArrayItemProvider([]);
+    let itemProvider = changes ? getChangeItemProvider(changes.changed) : new ArrayItemProvider([]);
 
     const HeaderCommandBarItems: IHeaderCommandBarItem[] = [
         {

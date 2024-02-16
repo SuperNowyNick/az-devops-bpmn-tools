@@ -24,6 +24,7 @@
     "bpmn-js": "^16.5.0",
     "bpmn-js-differ": "^2.0.2",
     "bpmn-moddle": "^8.1.0",
+    "lodash": "^4.17.21",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
@@ -31,6 +32,7 @@
     "@babel/core": "^7.23.9",
     "@testing-library/jest-dom": "^6.4.1",
     "@types/jest": "^29.5.12",
+    "@types/lodash": "^4.14.202",
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "babel-loader": "^9.1.3",

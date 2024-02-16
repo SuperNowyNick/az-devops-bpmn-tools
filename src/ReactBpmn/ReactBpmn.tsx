@@ -1,13 +1,14 @@
 import React, { useEffect, forwardRef, useRef, memo, useImperativeHandle } from "react";
 
 import BpmnJS from "bpmn-js/dist/bpmn-navigated-viewer.production.min";
+import { BpmnDiff, ElementChange } from "../bpmn-compare/bpmn-compare";
 
 export interface ReactBpmnProps {
   diagramXML: string,
   style?: BpmnStyle,
   onLoad?: () => void,
   onNavigate?: (viewbox : Viewbox) => void,
-  changes?: any
+  changes?: BpmnDiff
 }
 
 export interface BpmnStyle {
@@ -59,12 +60,12 @@ const ReactBpmn = memo(
         props.onNavigate(bpmnViewer.get('canvas').viewbox() as Viewbox);
     }
 
-    const markChanges = (viewer, changes, marker) => {
-      let element: keyof typeof changes;
-      for (element in changes){
-        try {viewer.get('canvas').addMarker(element, marker);}
+    const markChanges = (viewer, changes : ElementChange[], marker) => {
+      changes.forEach(x => {
+        console.log(x.id);
+        try {viewer.get('canvas').addMarker(x.id, marker);}
         catch (e) { }
-      }
+      });
     }
 
     const loadXml = async () => {
@@ -74,10 +75,10 @@ const ReactBpmn = memo(
 
       if(props.changes)
       {
-        markChanges(bpmnViewer, props.changes._added, CHANGE_MARKERS.added);
-        markChanges(bpmnViewer, props.changes._removed, CHANGE_MARKERS.removed);
-        markChanges(bpmnViewer, props.changes._changed, CHANGE_MARKERS.modified);
-        markChanges(bpmnViewer, props.changes._layoutChanged, CHANGE_MARKERS.layout);
+        markChanges(bpmnViewer, props.changes.added, CHANGE_MARKERS.added);
+        markChanges(bpmnViewer, props.changes.removed, CHANGE_MARKERS.removed);
+        markChanges(bpmnViewer, props.changes.changed, CHANGE_MARKERS.modified);
+        markChanges(bpmnViewer, props.changes.layoutChanged, CHANGE_MARKERS.layout);
       }
     }
 

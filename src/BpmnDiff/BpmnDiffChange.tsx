@@ -1,13 +1,8 @@
 import { Icon, IconSize } from "azure-devops-ui/Icon";
 import { IListItemDetails, ListItem } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
-import React, { useState } from "react";
-
-export interface IBpmnChange {
-    name: string,
-    elementId: string,
-    attributeChanges: { name: string, oldValue?: string, newValue?: string, type?: string,  }[]
-}
+import React from "react";
+import { ModifiedElement } from "../bpmn-compare/bpmn-compare";
 
 const parseAttributesChanges = (attrs) => {
     let attributes = [] as any[];
@@ -51,21 +46,8 @@ const parseModelExtensionChanges = (extensionElements) => {
     return changes;
 }
 
-export const getChangeItemProvider = (changes) => {
-    let elements = [] as IBpmnChange[];
-    let element: keyof typeof changes;
-    for (element in changes){
-        let model = changes[element].model;
-        let attrs = changes[element].attrs;
-        
-        console.log("model", model);
-        let attributes = parseAttributesChanges(attrs);
-            //.concat(parseModelExtensionChanges(model));
-        
-        elements.push({name: model.name, elementId: model.id, attributeChanges: attributes});
-    }
-
-    return new ArrayItemProvider(elements);
+export const getChangeItemProvider = (changes : ModifiedElement[]) => {
+    return new ArrayItemProvider(changes);
 }
 
 const getIconFromType = (type) => {
@@ -84,8 +66,8 @@ const AttributeChangeDetails = ({ attributeChange }) => {
     <div className="flex-row">
         <Icon iconName={getIconFromType(attributeChange.type)} size={IconSize.small}/>
         <span className="fontSizeMS font-size-ms secondary-text wrap-text">
-            <span className="margin-4">{attributeChange.name}:</span>
-            {attributeChange.newValue && <span className="margin-4 property-added">{attributeChange.newValue}</span>}
+            <span className="margin-4">{attributeChange.key}:</span>
+            {attributeChange.newValue && <span className="margin-4 property-added">{attributeChange.newValue.toString()}</span>}
             {attributeChange.oldValue && <span className="margin-4 property-removed">{attributeChange.oldValue.toString()}</span>}
         </span>
     </div>
@@ -94,8 +76,8 @@ const AttributeChangeDetails = ({ attributeChange }) => {
 
 export const renderRow = (
     index: number,
-    item: IBpmnChange,
-    details: IListItemDetails<IBpmnChange>,
+    item: ModifiedElement,
+    details: IListItemDetails<ModifiedElement>,
     key?: string
 ) => {
     //const [isExpanded, setExpanded] = useState(false);
@@ -106,9 +88,8 @@ export const renderRow = (
             style={{ marginLeft: "10px", padding: "10px 0px" }}
             className="flex-column h-scroll-hidden"
         >
-        <span className="wrap-text">{item.name}</span>
-        <span className="wrap-text">{item.elementId}</span>
-            {item.attributeChanges.map((x, i) => <AttributeChangeDetails key={i} attributeChange={x}/>)}
+        <span className="wrap-text">{item.id}</span>
+            {item.differences.map((x, i) => <AttributeChangeDetails key={i} attributeChange={x}/>)}
         </div>
     </div>
 </ListItem>)
