@@ -122,7 +122,7 @@ const getElementsDiff = (obj1, obj2, inverse = false) =>
         if (!obj2.hasOwnProperty(key)) {
             const element = obj1[key];
             const diff = getElementPropertiesDiff(inverse ? {} : element, inverse ? element : {});
-            result.push({ id: element.id, value: element, differences: diff });
+            result.push({ id: element.id, value: element, differences: diff, name: element.name });
         }
         return result;
     }, new Array<any>());
