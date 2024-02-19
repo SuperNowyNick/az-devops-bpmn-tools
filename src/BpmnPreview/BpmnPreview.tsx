@@ -15,7 +15,6 @@ import { SurfaceBackground, SurfaceContext } from "azure-devops-ui/Surface";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import "azure-devops-ui/Core/override.css";
 import "./BpmnPreview.scss";
 
 import ReactBpmn from "../ReactBpmn/ReactBpmn";

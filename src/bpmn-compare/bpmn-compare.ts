@@ -1,9 +1,9 @@
 import _ from "lodash";
 
 export interface BpmnDiff {
-    added: AddedElement[];
+    added: ModifiedElement[];
     changed: ModifiedElement[];
-    removed: RemovedElement[];
+    removed: ModifiedElement[];
     layoutChanged: MovedElement[];
 }
 
@@ -13,16 +13,9 @@ export interface ElementChange {
 
 export interface MovedElement extends ElementChange {}
 
-export interface AddedElement extends ElementChange {
-    newValue: any;
-}
-
-export interface RemovedElement extends ElementChange {
-    oldValue: any;
-}
-
 export interface ModifiedElement extends ElementChange {
     differences: ElementPropertyDiff[];
+    name?: string;
 }
 
 export interface ElementPropertyDiff {
@@ -114,7 +107,7 @@ const getElementPropertiesDiff = (
                 if (!obj1.hasOwnProperty(key)) {
                     if (key == "extensionElements") {
                         result = result.concat(
-                            getExtensionElementsDiff(obj1[key], { values: null })
+                            getExtensionElementsDiff(obj2[key], { values: null })
                         );
                     } else {
                         result.push({ key, oldValue: obj2[key] });
@@ -124,10 +117,12 @@ const getElementPropertiesDiff = (
             }, new Array<ElementPropertyDiff>())
         );
 
-const getObjectDiff = (obj1, obj2) =>
+const getElementsDiff = (obj1, obj2, inverse = false) =>
     Object.keys(obj1).reduce((result, key) => {
         if (!obj2.hasOwnProperty(key)) {
-            result.push({ key, value: obj1[key] });
+            const element = obj1[key];
+            const diff = getElementPropertiesDiff(inverse ? {} : element, inverse ? element : {});
+            result.push({ id: element.id, value: element, differences: diff });
         }
         return result;
     }, new Array<any>());
@@ -151,15 +146,15 @@ const getModifiedElements = (obj1, obj2) =>
             const oldElement = obj2.elementsById[key];
             const diff = getElementPropertiesDiff(newElement, oldElement);
             if (diff.length > 0)
-                result.push({ id: newElement.id, differences: diff });
+                result.push({ id: newElement.id, name: newElement.name , differences: diff });
         }
         return result;
     }, new Array<ModifiedElement>());
 
 const bpmnCompare = (newBpmn, oldBpmn): BpmnDiff => {
     return {
-        added: getObjectDiff(newBpmn.elementsById, oldBpmn.elementsById),
-        removed: getObjectDiff(oldBpmn.elementsById, newBpmn.elementsById),
+        added: getElementsDiff(newBpmn.elementsById, oldBpmn.elementsById),
+        removed: getElementsDiff(oldBpmn.elementsById, newBpmn.elementsById, true),
         changed: getModifiedElements(newBpmn, oldBpmn),
         layoutChanged: getMovedElements(newBpmn, oldBpmn),
     };

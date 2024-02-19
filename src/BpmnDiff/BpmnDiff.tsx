@@ -17,17 +17,17 @@ import { getChangeItemProvider, renderRow } from "./BpmnDiffChange";
 import ReactBpmn, { BpmnMethods, BpmnStyle } from "../ReactBpmn/ReactBpmn";
 
 import BpmnModdle from "bpmn-moddle";
-import { diff } from "bpmn-js-differ";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import bpmnCompare, { BpmnDiff } from "../bpmn-compare/bpmn-compare";
-
 
 function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     let isNavigating = false;
     const childRef1 = React.useRef(null);
     const childRef2 = React.useRef(null);
 
-    const [changes, setChanges] = React.useState(undefined as BpmnDiff | undefined);
+    const [changes, setChanges] = React.useState(
+        undefined as BpmnDiff | undefined
+    );
     const [panelExpanded, setPanelExpanded] = React.useState(false);
 
     const loadDiff = async () => {
@@ -36,7 +36,6 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         const bpmn2 = await moddle.fromXML(props.bpmn2);
 
         let bpmnDiff = bpmnCompare(bpmn1, bpmn2);
-        console.log(bpmnDiff);
         if (!changes) {
             setChanges(bpmnDiff);
         }
@@ -104,42 +103,73 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         [changes]
     );
 
-    let itemProvider = changes ? getChangeItemProvider(changes.changed) : new ArrayItemProvider([]);
+    let addedItemProvider = changes
+        ? getChangeItemProvider(changes.added)
+        : new ArrayItemProvider([]);
+    
+    let changedItemProvider = changes
+        ? getChangeItemProvider(changes.changed)
+        : new ArrayItemProvider([]);
+
+    let removedItemProvider = changes
+        ? getChangeItemProvider(changes.removed)
+        : new ArrayItemProvider([]);
 
     const HeaderCommandBarItems: IHeaderCommandBarItem[] = [
         {
             iconProps: {
-                iconName: "OpenSource"
+                iconName: "Lightbulb",
             },
             id: "bpmnDiffDetails",
             important: true,
             onActivate: () => setPanelExpanded(true),
             text: "Details",
             tooltipProps: {
-                text: "Open panel with diff details"
+                text: "Open panel with diff details",
             },
         },
     ];
-    
+
     return (
         <Page className="bpmn-preview">
-            <Header commandBarItems={HeaderCommandBarItems}/>
+            <Header commandBarItems={HeaderCommandBarItems} />
             <Splitter
                 splitterDirection={SplitterDirection.Horizontal}
                 onRenderNearElement={nearElement}
                 onRenderFarElement={farElement}
             />
-            { panelExpanded && <Panel
-                onDismiss={() => setPanelExpanded(false)}
-                titleProps={{ text: "Change details"}}
-                modal={false}
-                lightDismiss={false}>
+            {panelExpanded && (
+                <Panel
+                    onDismiss={() => setPanelExpanded(false)}
+                    titleProps={{ text: "Change details" }}
+                    modal={false}
+                    lightDismiss={false}
+                >
+                    <div className="">
+                    <span className="title-s">Added:</span>
                     <ScrollableList
                         ariaLabel="Tree"
                         renderRow={renderRow}
                         width="100%"
-                        itemProvider={itemProvider}/>
-                </Panel> }
+                        itemProvider={addedItemProvider}
+                    />
+                    <span className="title-s">Changed:</span>
+                    <ScrollableList
+                        ariaLabel="Tree"
+                        renderRow={renderRow}
+                        width="100%"
+                        itemProvider={changedItemProvider}
+                    />
+                    <span className="title-s">Removed:</span>
+                    <ScrollableList
+                        ariaLabel="Tree"
+                        renderRow={renderRow}
+                        width="100%"
+                        itemProvider={removedItemProvider}
+                    />
+                    </div>
+                </Panel>
+            )}
         </Page>
     );
 }

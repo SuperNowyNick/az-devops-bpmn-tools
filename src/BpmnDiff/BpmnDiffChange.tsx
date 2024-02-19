@@ -67,8 +67,8 @@ const AttributeChangeDetails = ({ attributeChange }) => {
         <Icon iconName={getIconFromType(attributeChange.type)} size={IconSize.small}/>
         <span className="fontSizeMS font-size-ms secondary-text wrap-text">
             <span className="margin-4">{attributeChange.key}:</span>
-            {attributeChange.newValue && <span className="margin-4 property-added">{attributeChange.newValue.toString()}</span>}
-            {attributeChange.oldValue && <span className="margin-4 property-removed">{attributeChange.oldValue.toString()}</span>}
+            {attributeChange.newValue && <span className="margin-4 property-added">{JSON.stringify(attributeChange.newValue)}</span>}
+            {attributeChange.oldValue && <span className="margin-4 property-removed">{JSON.stringify(attributeChange.oldValue)}</span>}
         </span>
     </div>
 );
@@ -80,8 +80,6 @@ export const renderRow = (
     details: IListItemDetails<ModifiedElement>,
     key?: string
 ) => {
-    //const [isExpanded, setExpanded] = useState(false);
-    console.log(item);
     return (<ListItem key={key || "list-item" + index} index={index} details={details}>
     <div className="list-example-row flex-row h-scroll-hidden">
         <div
@@ -89,6 +87,7 @@ export const renderRow = (
             className="flex-column h-scroll-hidden"
         >
         <span className="wrap-text">{item.id}</span>
+        {item.name && <span className="wrap-text">{item.name}</span>}
             {item.differences.map((x, i) => <AttributeChangeDetails key={i} attributeChange={x}/>)}
         </div>
     </div>

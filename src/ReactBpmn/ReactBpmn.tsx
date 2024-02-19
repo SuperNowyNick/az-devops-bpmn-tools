@@ -62,7 +62,6 @@ const ReactBpmn = memo(
 
     const markChanges = (viewer, changes : ElementChange[], marker) => {
       changes.forEach(x => {
-        console.log(x.id);
         try {viewer.get('canvas').addMarker(x.id, marker);}
         catch (e) { }
       });
