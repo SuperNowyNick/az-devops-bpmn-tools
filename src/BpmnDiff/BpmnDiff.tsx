@@ -3,8 +3,6 @@ import "azure-devops-ui/Core/override.css";
 import { Header } from "azure-devops-ui/Header";
 import { IHeaderCommandBarItem } from "azure-devops-ui/HeaderCommandBar";
 import { Page } from "azure-devops-ui/Page";
-import { Panel } from "azure-devops-ui/Panel";
-import { ScrollableList } from "azure-devops-ui/List";
 import { Splitter, SplitterDirection } from "azure-devops-ui/Splitter";
 
 import * as React from "react";
@@ -12,14 +10,11 @@ import * as React from "react";
 import "azure-devops-ui/Core/override.css";
 import "./BpmnDiff.scss";
 
-import { getChangeItemProvider, renderRow } from "./BpmnDiffChange";
-
+import BpmnDiffDetailsPanel from "./BpmnDiffDetailsPanel";
 import ReactBpmn, { BpmnMethods, BpmnStyle } from "../ReactBpmn/ReactBpmn";
 
 import BpmnModdle from "bpmn-moddle";
-import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import bpmnCompare, { BpmnDiff } from "../bpmn-compare/bpmn-compare";
-import { ContentSize } from "azure-devops-ui/Callout";
 
 function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     let isNavigating = false;
@@ -29,6 +24,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     const [changes, setChanges] = React.useState(
         undefined as BpmnDiff | undefined
     );
+
     const [panelExpanded, setPanelExpanded] = React.useState(false);
 
     const loadDiff = async () => {
@@ -104,18 +100,6 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         [changes]
     );
 
-    let addedItemProvider = changes
-        ? getChangeItemProvider(changes.added)
-        : new ArrayItemProvider([]);
-    
-    let changedItemProvider = changes
-        ? getChangeItemProvider(changes.changed)
-        : new ArrayItemProvider([]);
-
-    let removedItemProvider = changes
-        ? getChangeItemProvider(changes.removed)
-        : new ArrayItemProvider([]);
-
     const HeaderCommandBarItems: IHeaderCommandBarItem[] = [
         {
             iconProps: {
@@ -139,39 +123,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                 onRenderNearElement={nearElement}
                 onRenderFarElement={farElement}
             />
-            {panelExpanded && (
-                <Panel
-                    onDismiss={() => setPanelExpanded(false)}
-                    titleProps={{ text: "Change details" }}
-                    modal={false}
-                    size={ContentSize.ExtraLarge}
-                    lightDismiss={false}
-                >
-                    <div className="">
-                    <span className="title-s">Added:</span>
-                    <ScrollableList
-                        ariaLabel="Tree"
-                        renderRow={renderRow}
-                        width="100%"
-                        itemProvider={addedItemProvider}
-                    />
-                    <span className="title-s">Changed:</span>
-                    <ScrollableList
-                        ariaLabel="Tree"
-                        renderRow={renderRow}
-                        width="100%"
-                        itemProvider={changedItemProvider}
-                    />
-                    <span className="title-s">Removed:</span>
-                    <ScrollableList
-                        ariaLabel="Tree"
-                        renderRow={renderRow}
-                        width="100%"
-                        itemProvider={removedItemProvider}
-                    />
-                    </div>
-                </Panel>
-            )}
+            { panelExpanded && <BpmnDiffDetailsPanel changes={changes} onClose={() => setPanelExpanded(false)}/>}
         </Page>
     );
 }
