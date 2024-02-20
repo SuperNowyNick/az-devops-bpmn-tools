@@ -36,6 +36,8 @@ const ignoredProperties = [
     "waypoint",
 ];
 
+const extensionElementsKey = "extensionElements"
+
 const getExtensionElementsDiff = (obj1, obj2) => {
     const newProperties = obj1.values
         ? (obj1.values as any[])
@@ -77,7 +79,7 @@ const getElementPropertiesDiff = (
     Object.keys(obj1)
         .reduce((result, key) => {
             if (!obj2.hasOwnProperty(key)) {
-                if (key == "extensionElements") {
+                if (key == extensionElementsKey) {
                     result = result.concat(
                         getExtensionElementsDiff(obj1[key], { values: null })
                     );
@@ -88,7 +90,7 @@ const getElementPropertiesDiff = (
                 !ignoredProperties.includes(key) &&
                 !comparer(obj1[key], obj2[key])
             ) {
-                if (key == "extensionElements") {
+                if (key == extensionElementsKey) {
                     result = result.concat(
                         getExtensionElementsDiff(obj1[key], obj2[key])
                     );
@@ -105,7 +107,7 @@ const getElementPropertiesDiff = (
         .concat(
             Object.keys(obj2).reduce((result, key) => {
                 if (!obj1.hasOwnProperty(key)) {
-                    if (key == "extensionElements") {
+                    if (key == extensionElementsKey) {
                         result = result.concat(
                             getExtensionElementsDiff(obj2[key], { values: null })
                         );
@@ -122,10 +124,10 @@ const getElementsDiff = (obj1, obj2, inverse = false) =>
         if (!obj2.hasOwnProperty(key)) {
             const element = obj1[key];
             const diff = getElementPropertiesDiff(inverse ? {} : element, inverse ? element : {});
-            result.push({ id: element.id, value: element, differences: diff, name: element.name });
+            result.push({ id: element.id, differences: diff, name: element.name });
         }
         return result;
-    }, new Array<any>());
+    }, new Array<ModifiedElement>());
 
 const getMovedElements = (obj1, obj2) =>
     Object.keys(obj1.elementsById).reduce((result, key) => {
