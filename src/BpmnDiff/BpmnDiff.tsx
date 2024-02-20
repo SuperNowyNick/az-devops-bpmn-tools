@@ -19,6 +19,7 @@ import ReactBpmn, { BpmnMethods, BpmnStyle } from "../ReactBpmn/ReactBpmn";
 import BpmnModdle from "bpmn-moddle";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import bpmnCompare, { BpmnDiff } from "../bpmn-compare/bpmn-compare";
+import { ContentSize } from "azure-devops-ui/Callout";
 
 function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     let isNavigating = false;
@@ -143,6 +144,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                     onDismiss={() => setPanelExpanded(false)}
                     titleProps={{ text: "Change details" }}
                     modal={false}
+                    size={ContentSize.ExtraLarge}
                     lightDismiss={false}
                 >
                     <div className="">
