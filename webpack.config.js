@@ -22,7 +22,6 @@ module.exports = {
     },
     entry: entries,
     output: {
-        publicPath: "/dist/",
         filename: "[name]/[name].js"
     },
     resolve: {
@@ -36,6 +35,10 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.bpmn$/,
+                loader: "raw-loader"
+            },
             {
                 test: /\.tsx?$/,
                 loader: "ts-loader"
@@ -64,10 +67,9 @@ module.exports = {
                ],
             },
             {
-                test: /\.woff$/,
-                use: [{
-                    loader: "base64-inline-loader"
-                }]
+                test: /\.woff2?$/i,
+                type: 'asset/resource',
+                dependency: { not: ['url'] },
             },
             {
                 test: /\.html$/,
