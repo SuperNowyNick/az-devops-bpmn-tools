@@ -22,7 +22,6 @@ module.exports = {
     },
     entry: entries,
     output: {
-        publicPath: "/dist/",
         filename: "[name]/[name].js"
     },
     resolve: {
@@ -68,10 +67,9 @@ module.exports = {
                ],
             },
             {
-                test: /\.woff$/,
-                use: [{
-                    loader: "base64-inline-loader"
-                }]
+                test: /\.woff2?$/i,
+                type: 'asset/resource',
+                dependency: { not: ['url'] },
             },
             {
                 test: /\.html$/,
