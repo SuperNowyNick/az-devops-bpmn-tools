@@ -1,3 +1,4 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 #react-canvas, .bpmn-preview, .react-bpmn-diagram-container {width: 100%; height: 100%; margin: 0; padding: 0}
 
 #root {
@@ -15,7 +16,8 @@
   left: 30px;
   padding: 0px;
   margin: 0px;
-  font-family: var(--breadcrumbs-font-family);
+  font-family: $fontFamily;
+  color: var(--text-primary-color);
   font-size: 16px;
   line-height: normal;
 }
@@ -40,18 +42,20 @@
 
 .bjs-breadcrumbs li a {
   cursor: pointer;
-  color: var(--breadcrumbs-item-color);
+  color: var(--text-primary-color);
 }
 
 .bjs-breadcrumbs li:last-of-type a {
-  color: inherit;
+  color: var(--text-primary-color);
   cursor: default;
 }
 
+
 .bjs-breadcrumbs li:not(:first-child)::before {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" /><path d="M0 0h24v24H0z" fill="none" /></svg>');
+  background: var(--text-primary-color);
+  mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="white" /><path d="M0 0h24v24H0z" fill="none" /></svg>');
   padding: 0 8px;
-  color: var(--breadcrumbs-arrow-color);
+  content: '';
   height: 1em;
 }
 
