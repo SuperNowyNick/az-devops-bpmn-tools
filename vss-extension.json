@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "devops-bpmn-tools",
     "publisher": "SuperNowyNick",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "name": "Azure Devops BPMN tools",
     "description": "Visual Studio Services extension for BPMN files",
     "public": true,
@@ -15,10 +15,26 @@
     "icons": {
         "default": "logo.png"
     },
+    "branding": {
+        "color": "rgb(161, 189, 199)",
+        "theme": "light"
+    },
     "content": {
         "details": {
             "path": "overview.md"
+        },
+        "license": {
+            "path": "license.txt"
         }
+    },
+    "links": {
+        "support": {
+            "uri": "https://github.com/SuperNowyNick/az-devops-bpmn-tools/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/SuperNowyNick/az-devops-bpmn-tools"
     },
     "contributions": [
         {
