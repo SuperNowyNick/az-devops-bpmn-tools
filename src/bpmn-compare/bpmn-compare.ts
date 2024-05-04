@@ -36,6 +36,11 @@ const ignoredProperties = [
     "waypoint",
 ];
 
+const ignoredElements = [
+    "bpmndi:BPMNShape",
+    "bpmndi:BPMNEdge"
+]
+
 const extensionElementsKey = "extensionElements";
 const eventDefinitionsKey = "eventDefinitions";
 const conditionExpressionKey = "conditionExpression";
@@ -117,6 +122,12 @@ function addPropertyChange(
     });
 }
 
+function propertyExistsOnAny(property, key, obj1, obj2) : boolean {
+    if(obj1 && obj1[key] && obj1[key].hasOwnProperty(property)) return true;
+    if(obj2 && obj2[key] && obj2[key].hasOwnProperty(property)) return true;
+    return false;
+}
+
 function mapProperty(
     result: ElementPropertyDiff[],
     key: string,
@@ -138,11 +149,13 @@ function mapProperty(
             );
             break;
         case conditionExpressionKey:
+            if(propertyExistsOnAny("language", key, obj1, obj2))
+                addPropertyChange(result, "language", obj1, obj2, (o) => o[key]?.language);
             addPropertyChange(result, key, obj1, obj2, (o) => o[key].body);
             break;
         case bpmnDocumentationKey:
             addPropertyChange(result, key, obj1, obj2, (o) =>
-                o[key].map((x) => x.text)
+                o[key].map(x => x.text)
             );
             break;
         default:
@@ -151,13 +164,27 @@ function mapProperty(
     }
 }
 
+const mapInheritedObjectProperties = (obj: any) : any => {
+    switch (obj?.$type) {
+        case "bpmn:ExclusiveGateway":
+        case "bpmn:InclusiveGateway":
+        case "bpmn:ComplexGateway":
+            return { default: obj.default?.id, ...obj };
+        default:
+            return obj;
+    }
+}
+
 const getElementPropertiesDiff = (
     obj1: any,
     obj2: any,
     comparer: (o1, o2) => boolean = (a, b) =>
         JSON.stringify(a) === JSON.stringify(b)
-) =>
-    Object.keys(obj1)
+) : ElementPropertyDiff[] => {
+    obj1 = mapInheritedObjectProperties(obj1);
+    obj2 = mapInheritedObjectProperties(obj2);
+
+    return Object.keys(obj1)
         .reduce((result, key) => {
             if (ignoredProperties.includes(key)) return result;
             if (!obj2.hasOwnProperty(key)) {
@@ -172,15 +199,19 @@ const getElementPropertiesDiff = (
         }, new Array<ElementPropertyDiff>())
         .concat(
             Object.keys(obj2).reduce((result, key) => {
+                if (ignoredProperties.includes(key)) return result;
                 if (!obj1.hasOwnProperty(key)) {
                     mapProperty(result, key, null, obj2);
                 }
                 return result;
             }, new Array<ElementPropertyDiff>())
         );
+};
 
-const getElementsDiff = (obj1, obj2, inverse = false) =>
-    Object.keys(obj1).reduce((result, key) => {
+const getElementsDiff = (obj1, obj2, inverse = false): ModifiedElement[] => {
+    if (!obj1) return [];
+    return Object.keys(obj1).reduce((result, key) => {
+        if (ignoredElements.includes(obj1[key]?.$type)) return result;
         if (!obj2.hasOwnProperty(key)) {
             const element = obj1[key];
             const diff = getElementPropertiesDiff(
@@ -195,9 +226,11 @@ const getElementsDiff = (obj1, obj2, inverse = false) =>
         }
         return result;
     }, new Array<ModifiedElement>());
+};
 
-const getMovedElements = (obj1, obj2) =>
-    Object.keys(obj1.elementsById).reduce((result, key) => {
+const getMovedElements = (obj1, obj2): MovedElement[] => {
+    if (!obj1?.elementsById) return [];
+    return Object.keys(obj1.elementsById).reduce((result, key) => {
         if (obj2.elementsById.hasOwnProperty(key)) {
             const newElement = obj1.elementsById[key];
             const oldElement = obj2.elementsById[key];
@@ -207,9 +240,12 @@ const getMovedElements = (obj1, obj2) =>
         }
         return result;
     }, new Array<MovedElement>());
+};
 
-const getModifiedElements = (obj1, obj2) =>
-    Object.keys(obj1.elementsById).reduce((result, key) => {
+const getModifiedElements = (obj1, obj2): ModifiedElement[] => {
+    if (!obj1?.elementsById) return [];
+    return Object.keys(obj1.elementsById).reduce((result, key) => {
+        if (ignoredElements.includes(obj1[key]?.$type)) return result;
         if (obj2.elementsById.hasOwnProperty(key)) {
             const newElement = obj1.elementsById[key];
             const oldElement = obj2.elementsById[key];
@@ -223,6 +259,7 @@ const getModifiedElements = (obj1, obj2) =>
         }
         return result;
     }, new Array<ModifiedElement>());
+};
 
 const bpmnCompare = (newBpmn, oldBpmn): BpmnDiff => {
     return {
