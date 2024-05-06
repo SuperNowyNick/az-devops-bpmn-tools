@@ -164,12 +164,14 @@ function mapProperty(
     }
 }
 
-const mapInheritedObjectProperties = (obj: any) : any => {
+const mapAdditionalObjectProperties = (obj: any) : any => {
     switch (obj?.$type) {
         case "bpmn:ExclusiveGateway":
         case "bpmn:InclusiveGateway":
         case "bpmn:ComplexGateway":
             return { default: obj.default?.id, ...obj };
+        case "bpmn:Process":
+            return { timeToLive: obj?.$attrs['camunda:historyTimeToLive'], version: obj?.$attrs['camunda:versionTag'], ...obj};
         default:
             return obj;
     }
@@ -181,9 +183,8 @@ const getElementPropertiesDiff = (
     comparer: (o1, o2) => boolean = (a, b) =>
         JSON.stringify(a) === JSON.stringify(b)
 ) : ElementPropertyDiff[] => {
-    obj1 = mapInheritedObjectProperties(obj1);
-    obj2 = mapInheritedObjectProperties(obj2);
-
+    obj1 = mapAdditionalObjectProperties(obj1);
+    obj2 = mapAdditionalObjectProperties(obj2);
     return Object.keys(obj1)
         .reduce((result, key) => {
             if (ignoredProperties.includes(key)) return result;
