@@ -99,7 +99,7 @@ const getExtensionElementsDiff = (obj1, obj2) => {
     return getElementPropertiesDiff(
         newProperties,
         oldProperties,
-        (o1, o2) => o1.value === o2.value
+        (o1, o2) => o1?.value === o2?.value
     ).map((x) => {
         x.type = x.newValue?.type ? x.newValue.type : x.oldValue?.type;
         x.newValue = x.newValue?.value;
@@ -164,14 +164,22 @@ function mapProperty(
     }
 }
 
+function addAttributes(obj: any) : any {
+    if(!obj?.$attrs) return obj;
+    return Object.entries(obj.$attrs).reduce((obj, [key,value]) => {
+        if(!key.includes("xmlns:"))
+            obj[key] = value;
+        return obj;
+    }, obj);
+}
+
 const mapAdditionalObjectProperties = (obj: any) : any => {
+    obj = addAttributes(obj);
     switch (obj?.$type) {
         case "bpmn:ExclusiveGateway":
         case "bpmn:InclusiveGateway":
         case "bpmn:ComplexGateway":
             return { default: obj.default?.id, ...obj };
-        case "bpmn:Process":
-            return { timeToLive: obj?.$attrs['camunda:historyTimeToLive'], version: obj?.$attrs['camunda:versionTag'], ...obj};
         default:
             return obj;
     }

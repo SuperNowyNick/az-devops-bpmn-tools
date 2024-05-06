@@ -23,9 +23,14 @@ test("Empty -> Changed TTL: changed process TTL", () => {
                     name: undefined,
                     differences: [
                         {
-                            key: "timeToLive",
+                            key: "camunda:historyTimeToLive",
                             newValue: "30",
                             oldValue: "180"
+                        },
+                        {
+                            key: "camunda:isStartableInTasklist",
+                            newValue: "false",
+                            oldValue: ""
                         }
                     ]
                 }
@@ -46,9 +51,14 @@ test("Empty -> Changed version: changed process version", () => {
                     name: undefined,
                     differences: [
                         {
-                            key: "version",
+                            key: "camunda:versionTag",
                             newValue: "1.1.1",
-                            oldValue: undefined
+                            oldValue: ""
+                        },
+                        {
+                            key: "camunda:isStartableInTasklist",
+                            newValue: "false",
+                            oldValue: ""
                         }
                     ]
                 }
