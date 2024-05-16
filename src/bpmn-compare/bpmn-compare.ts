@@ -21,6 +21,7 @@ export interface ModifiedElement extends ElementChange {
 export interface ElementPropertyDiff {
     key: string;
     type?: string;
+    subtype?: string;
     newValue?: any;
     oldValue?: any;
 }
@@ -55,25 +56,52 @@ function adjustPropName(itemName: string, object: any) {
     return name;
 }
 
-function mapInputOutputParameters(item: any) : any {
+function mapInputOutputParameters(item: any, subtype?: any | null) : any {
     if(!item.$children) return {
         name: item.name,
         type: item.$type,
+        subtype: subtype,
         value: item.$body,
     };
 
     return {
         name: item.name,
         type: item.$type,
+        subtype: subtype,
         value: item.$children,
     };
 }
 
-function mapNestedExtensionProperty(item: any) : any {
+function mapConnectorProperties(item: any) : any {
+    return item.$children.reduce((arr, child) => {
+        switch(child.$type){
+            case "camunda:inputOutput":
+                arr = arr.concat(child.$children.map(x => mapNestedExtensionProperty(x, item.$type)));
+                break;
+            default:
+                arr.push({
+                    name: child.$type,
+                    type: child.$type,
+                    value: child.$body,
+                })
+        }
+        return arr;
+    }, []);
+}
+
+function mapNestedExtensionProperty(item: any, subtype?: any | null) : any {
     switch(item.$type){
         case "camunda:inputParameter":
         case "camunda:outputParameter":
-            return mapInputOutputParameters(item);
+            return mapInputOutputParameters(item, subtype);
+        case "camunda:string":
+        case "camunda:expression":
+            return {
+                name: item.$parent.name,
+                type: item.$parent.$type,
+                subtype: item.$type,
+                value: item.$body,
+            }
         default:
             return {
                 name: item.name,
@@ -89,6 +117,9 @@ function mapExtensionProperties(object: any[]): any[] {
               .map((x) => {
                   // check if property has nested fields but not for exectutionListener
                   if (x.$children && x.$type != "camunda:executionListener") {
+                      if (x.$type == "camunda:connector")
+                        return mapConnectorProperties(x);
+
                       return x.$children.map((item) => {
                           return mapNestedExtensionProperty(item);
                       });
@@ -109,6 +140,7 @@ function mapExtensionProperties(object: any[]): any[] {
 
                   obj[name] = {
                       type: item.type,
+                      subtype: item.subtype,
                       value: item.value,
                   };
                   return obj;
@@ -126,6 +158,7 @@ const getExtensionElementsDiff = (obj1, obj2) => {
         (o1, o2) => o1?.value === o2?.value
     ).map((x) => {
         x.type = x.newValue?.type ? x.newValue.type : x.oldValue?.type;
+        x.subtype = x.newValue?.subtype ? x.newValue.subtype : x.oldValue?.subtype;
         x.newValue = x.newValue?.value;
         x.oldValue = x.oldValue?.value;
         return x;

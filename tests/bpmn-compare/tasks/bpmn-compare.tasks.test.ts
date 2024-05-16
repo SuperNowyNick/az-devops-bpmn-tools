@@ -71,6 +71,7 @@ test("Task -> Task with continuation: task continuation added", () => {
                                 newValue: '{"$body":"123"}',
                                 oldValue: undefined,
                                 type: "camunda:failedJobRetryTimeCycle",
+                                subtype: undefined
                             },
                             {
                                 key: "camunda:asyncBefore",
@@ -110,6 +111,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             newValue: "${testExpression}",
                             oldValue: undefined,
                             type: "camunda:inputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "inputScript",
@@ -122,6 +124,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:inputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "inputScriptExternal",
@@ -134,6 +137,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:inputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "inputList",
@@ -154,6 +158,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:inputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "inputMap",
@@ -176,12 +181,14 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:inputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "output",
                             newValue: "${simpleOutputExpression}",
                             oldValue: undefined,
                             type: "camunda:outputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "outputScript",
@@ -194,6 +201,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:outputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "outputScriptExternal",
@@ -206,6 +214,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:outputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "outputList",
@@ -226,6 +235,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:outputParameter",
+                            subtype: undefined
                         },
                         {
                             key: "outputMap",
@@ -248,6 +258,7 @@ test("Task -> Task with IO: task input/output added", () => {
                             ],
                             oldValue: undefined,
                             type: "camunda:outputParameter",
+                            subtype: undefined
                         },
                     ],
                 },
