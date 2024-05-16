@@ -151,7 +151,7 @@ function mapExtensionProperties(object: any[]): any[] {
 const getExtensionElementsDiff = (obj1, obj2) => {
     const newProperties = mapExtensionProperties(obj1.values);
     const oldProperties = mapExtensionProperties(obj2.values);
-
+    
     return getElementPropertiesDiff(
         newProperties,
         oldProperties,
@@ -237,6 +237,8 @@ const mapAdditionalObjectProperties = (obj: any) : any => {
         case "bpmn:InclusiveGateway":
         case "bpmn:ComplexGateway":
             return { default: obj.default?.id, ...obj };
+        case "bpmn:ReceiveTask":
+            return { messageRef: obj.messageRef?.id, ...obj };
         default:
             return obj;
     }
