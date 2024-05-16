@@ -55,6 +55,34 @@ function adjustPropName(itemName: string, object: any) {
     return name;
 }
 
+function mapInputOutputParameters(item: any) : any {
+    if(!item.$children) return {
+        name: item.name,
+        type: item.$type,
+        value: item.$body,
+    };
+
+    return {
+        name: item.name,
+        type: item.$type,
+        value: item.$children,
+    };
+}
+
+function mapNestedExtensionProperty(item: any) : any {
+    switch(item.$type){
+        case "camunda:inputParameter":
+        case "camunda:outputParameter":
+            return mapInputOutputParameters(item);
+        default:
+            return {
+                name: item.name,
+                type: item.$type,
+                value: item.$body,
+            };
+    }
+}
+
 function mapExtensionProperties(object: any[]): any[] {
     return object
         ? (object as any[])
@@ -62,11 +90,7 @@ function mapExtensionProperties(object: any[]): any[] {
                   // check if property has nested fields but not for exectutionListener
                   if (x.$children && x.$type != "camunda:executionListener") {
                       return x.$children.map((item) => {
-                          return {
-                              name: item.name,
-                              type: item.$type,
-                              value: item.$body,
-                          };
+                          return mapNestedExtensionProperty(item);
                       });
                   }
                   // if not - map all property fields as a value
