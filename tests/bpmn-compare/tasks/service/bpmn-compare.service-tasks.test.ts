@@ -1,9 +1,9 @@
-import bpmnCompare from "../../../src/bpmn-compare/bpmn-compare";
+import bpmnCompare from "../../../../src/bpmn-compare/bpmn-compare";
 
 import BpmnModdle from "bpmn-moddle";
 
-import * as emptyBbpmn from "./empty.bpmn";
-import * as serviceTaskBpmn from "./service-task.bpmn";
+import * as emptyBbpmn from "./../empty.bpmn";
+import * as serviceTaskBpmn from "./service_task.bpmn";
 import * as externalTaskBpmn from "./changed_external.bpmn";
 import * as externalWithErrorTaskBpmn from "./changed_external_error.bpmn";
 import * as externalWithInjectionsTaskBpmn from "./changed_external_injections.bpmn";
