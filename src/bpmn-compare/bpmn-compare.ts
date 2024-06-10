@@ -102,6 +102,13 @@ function mapNestedExtensionProperty(item: any, subtype?: any | null) : any {
                 subtype: item.$type,
                 value: item.$body,
             }
+        case "camunda:formField":
+            return {
+                name: item.id,
+                type: item.$type,
+                subtype: item.type,
+                value: item,
+            };
         default:
             return {
                 name: item.name,
