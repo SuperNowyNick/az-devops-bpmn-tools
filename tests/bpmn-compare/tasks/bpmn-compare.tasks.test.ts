@@ -6,6 +6,7 @@ import * as emptyBbpmn from "./empty.bpmn";
 import * as taskBpmn from "./task.bpmn";
 import * as changedContinuationBpmn from "./changed_continuation.bpmn";
 import * as changedInputOutput from "./changed_io.bpmn";
+import * as extensionPropBpmn from "./extension_props.bpmn";
 
 const loadDiff = async (bpmn1, bpmn2) => {
     const moddle = new BpmnModdle();
@@ -266,5 +267,33 @@ test("Task -> Task with IO: task input/output added", () => {
             layoutChanged: [],
             removed: [],
         })
+    );
+});
+
+test("Task -> Task with extension props: extension props added", () => {
+    return loadDiff(extensionPropBpmn.default, taskBpmn.default).then(
+        (data) =>
+            expect(
+                bpmnCompare(data.bpmn1Moddle, data.bpmn2Moddle)
+            ).toStrictEqual({
+                added: [],
+                changed: [
+                    {
+                        name: undefined,
+                        id: "Activity_164nis1",
+                        differences: [
+                            {
+                                key: "testExtensionProperty",
+                                newValue: "testExtensionValue",
+                                oldValue: undefined,
+                                subtype: undefined,
+                                type: "camunda:property"
+                            }
+                        ],
+                    },
+                ],
+                layoutChanged: [],
+                removed: [],
+            })
     );
 });
