@@ -535,6 +535,11 @@ test("Empty -> Intermediate Message Catch: start event set to intermediate messa
                     id: "MessageEventDefinition_0yft8b5",
                     differences: [
                         {
+                            key: "messageRef",
+                            newValue: "Message_1rsimj7",
+                            oldValue: "",
+                        },
+                        {
                             key: "$type",
                             newValue: "bpmn:MessageEventDefinition",
                             oldValue: "",
@@ -600,6 +605,11 @@ test("Empty -> Intermediate Message Throw: end event set to intermediate message
                     name: undefined,
                     id: "MessageEventDefinition_0dzofdv",
                     differences: [
+                        {
+                            key: "messageRef",
+                            newValue: "Message_14b0hja",
+                            oldValue: "",
+                        },
                         {
                             key: "$type",
                             newValue: "bpmn:MessageEventDefinition",

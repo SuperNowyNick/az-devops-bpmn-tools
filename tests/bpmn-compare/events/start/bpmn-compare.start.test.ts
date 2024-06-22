@@ -347,6 +347,11 @@ test("Empty -> Message Start: start set to message", () => {
                     id: "MessageEventDefinition_055dud7",
                     differences: [
                         {
+                            key: "messageRef",
+                            newValue: "Message_3m3ekk9",
+                            oldValue: "",
+                        },
+                        {
                             key: "$type",
                             newValue: "bpmn:MessageEventDefinition",
                             oldValue: "",

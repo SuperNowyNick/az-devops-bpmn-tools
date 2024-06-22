@@ -168,6 +168,11 @@ test("Empty -> Message End: end set to message", () => {
                     id: "MessageEventDefinition_1f6zbbu",
                     differences: [
                         {
+                            key: "messageRef",
+                            newValue: "Message_301cpdm",
+                            oldValue: "",
+                        },
+                        {
                             key: "$type",
                             newValue: "bpmn:MessageEventDefinition",
                             oldValue: "",
