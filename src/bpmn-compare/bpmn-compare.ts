@@ -252,6 +252,8 @@ const mapAdditionalObjectProperties = (obj: any) : any => {
             return { default: obj.default?.id, ...obj };
         case "bpmn:ReceiveTask":
             return { messageRef: obj.messageRef?.id, ...obj };
+        case "bpmn:SignalEventDefinition":
+            return { signalRef: obj.signalRef?.id, ...obj };
         default:
             return obj;
     }

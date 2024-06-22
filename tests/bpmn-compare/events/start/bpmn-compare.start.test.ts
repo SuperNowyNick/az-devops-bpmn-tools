@@ -130,6 +130,11 @@ test("Empty -> Signal Start: start set to signal", () => {
                     id: "SignalEventDefinition_1hsrpyu",
                     differences: [
                         {
+                            key: "signalRef",
+                            newValue: "Signal_35jg4dq",
+                            oldValue: "",
+                        },
+                        {
                             key: "$type",
                             newValue: "bpmn:SignalEventDefinition",
                             oldValue: "",
