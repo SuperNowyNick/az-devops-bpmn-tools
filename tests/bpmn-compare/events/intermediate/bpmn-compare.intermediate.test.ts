@@ -359,6 +359,11 @@ test("Empty -> Intermediate Escalation Throw: end event set to intermediate esca
                     id: "EscalationEventDefinition_1414tmo",
                     differences: [
                         {
+                            key: "escalationRef",
+                            newValue: "Escalation_193im8u",
+                            oldValue: "",
+                        },
+                        {
                             key: "$type",
                             newValue: "bpmn:EscalationEventDefinition",
                             oldValue: "",

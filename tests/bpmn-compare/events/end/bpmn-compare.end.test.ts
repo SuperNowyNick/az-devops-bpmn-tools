@@ -445,6 +445,11 @@ test("Empty -> Escalation End: end set to escalation", () => {
                     id: "EscalationEventDefinition_05orc6h",
                     differences: [
                         {
+                            key: "escalationRef",
+                            newValue: "Escalation_21lfj3v",
+                            oldValue: "",
+                        },
+                        {
                             key: "$type",
                             newValue: "bpmn:EscalationEventDefinition",
                             oldValue: "",
