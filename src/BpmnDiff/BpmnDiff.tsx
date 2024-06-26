@@ -20,6 +20,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     let isNavigating = false;
     const childRef1 = React.useRef(null);
     const childRef2 = React.useRef(null);
+    const viewBox = React.useRef(null);
 
     const [changes, setChanges] = React.useState(
         undefined as BpmnDiff | undefined
@@ -45,6 +46,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         isNavigating = true;
         const bpmnViewer = ref.current as unknown as BpmnMethods;
         bpmnViewer.navigate(viewbox);
+        viewBox.current = viewbox;
         isNavigating = false;
     };
 
@@ -66,6 +68,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                         diagramXML={props.bpmn1}
                         style={props.style}
                         changes={changes}
+                        onLoad={() => viewBox.current && syncViewbox(childRef1, viewBox.current)}
                         onNavigate={(v) => syncViewbox(childRef2, v)}
                     />
                 </div>
@@ -92,6 +95,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                         diagramXML={props.bpmn2}
                         style={props.style}
                         changes={changes}
+                        onLoad={() => viewBox.current && syncViewbox(childRef2, viewBox.current)}
                         onNavigate={(v) => syncViewbox(childRef1, v)}
                     />
                 </div>
