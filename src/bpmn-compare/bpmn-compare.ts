@@ -258,6 +258,8 @@ const mapAdditionalObjectProperties = (obj: any) : any => {
                 return { messageRef: obj.messageRef?.id, ...obj }
         case "bpmn:EscalationEventDefinition":
             return { escalationRef: obj.escalationRef?.id, ...obj }
+        case "bpmn:Participant":
+            return { processRef: obj.processRef?.id, ...obj }
         default:
             return obj;
     }
