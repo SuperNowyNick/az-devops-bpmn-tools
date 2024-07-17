@@ -20,7 +20,7 @@ function BpmnPreview() {
     const [previousBpmn, setPreviousBpmn] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-        fileResolverInit((file, prevFile) => { setBpmn(file); if(prevFile) setPreviousBpmn(prevFile) })        
+        fileResolverInit((file, prevFile) => { setBpmn(file); if(prevFile) setPreviousBpmn(prevFile) });
     });
 
     const bpmnStyle = {

@@ -3,37 +3,48 @@ import * as SDK from "azure-devops-extension-sdk";
 import {
     CommonServiceIds,
     IHostNavigationService,
+    IPageRoute,
     getClient,
 } from "azure-devops-extension-api";
 
 import { GitRestClient } from "azure-devops-extension-api/Git/GitClient";
 import { BuildRestClient } from "azure-devops-extension-api/Build/BuildClient";
 
-const fileResolverInit = async (callback :(bpmn: string, previousBpmn?: string | null) => void) => {
+const PullRequestRouteID = "ms.vss-code-web.pull-request-details-route";
+const CommitCmpRouteID = "ms.vss-code-web.commit-new-route";
+
+const fileResolverInit = async (
+    callback: (bpmn: string, previousBpmn?: string | null) => void
+) => {
     await SDK.init();
     await SDK.ready();
 
-    const fileContent = SDK.getConfiguration().content;
+    const defaultFileContent = SDK.getConfiguration().content;
 
-    const navigationService =
-        await SDK.getService<IHostNavigationService>(
-            CommonServiceIds.HostNavigationService
-        );
+    const navigationService = await SDK.getService<IHostNavigationService>(
+        CommonServiceIds.HostNavigationService
+    );
 
     const pageRoute = await navigationService.getPageRoute();
     const params = await navigationService.getQueryParams();
 
-    if (pageRoute.id == "ms.vss-code-web.pull-request-details-route") {
-        const files = await loadPreviousFile(pageRoute, params);
-        callback(files?.file ? files.file : fileContent, files.previousFile);
+    let fileResolution = { file: null as any, previousFile: null as any};
+
+    console.log(pageRoute);
+    console.log(params);
+    switch (pageRoute.id) {
+        case PullRequestRouteID:
+            fileResolution= await loadPreviousPullRequestFile(pageRoute,params);
+            break;
+        case CommitCmpRouteID:
+            fileResolution = await loadPreviousCommitCmpFile(pageRoute,params);
+            break;
     }
-    else
-    {
-        callback(fileContent);
-    }
+    
+    callback(fileResolution.file ? fileResolution.file : defaultFileContent, fileResolution.previousFile);
 };
 
-const loadPreviousFile = async (pageRoute, params) => {
+const loadPreviousPullRequestFile = async (pageRoute: IPageRoute, params) => {
     const client = getClient(GitRestClient);
     const iterations = await client.getPullRequestIterations(
         pageRoute.routeValues.GitRepositoryName,
@@ -49,6 +60,24 @@ const loadPreviousFile = async (pageRoute, params) => {
         ? iterations[params.base - 1].sourceRefCommit.commitId
         : iterations[0].targetRefCommit.commitId;
 
+    return await tryLoadFiles(pageRoute, source, target, params.path);
+};
+
+const loadPreviousCommitCmpFile = async (pageRoute: IPageRoute, params) => {
+    const client = getClient(GitRestClient);
+
+    const commit = await client.getCommit(
+        pageRoute.routeValues.parameters,
+        pageRoute.routeValues.GitRepositoryName,
+        pageRoute.routeValues.project
+    );
+    const baseVersion = commit.commitId;
+    const targetVersion = commit.parents[0];
+
+    return await tryLoadFiles(pageRoute, baseVersion, targetVersion, params.path);
+};
+
+const tryLoadFiles = async (pageRoute: IPageRoute, source, target, path) => {
     const buildClient = getClient(BuildRestClient);
     let file = null as string | null;
     let previousFile = null as string | null;
@@ -59,7 +88,7 @@ const loadPreviousFile = async (pageRoute, params) => {
             undefined,
             pageRoute.routeValues.GitRepositoryName,
             source,
-            params.path
+            path
         );
     } catch (e) {
         return { file: null, previousFile: null };
@@ -71,12 +100,12 @@ const loadPreviousFile = async (pageRoute, params) => {
             undefined,
             pageRoute.routeValues.GitRepositoryName,
             target,
-            params.path
+            path
         );
         return { file, previousFile };
     } catch (e) {
         return { file: file, previousFile: null };
     }
-};
+}
 
 export { fileResolverInit };
