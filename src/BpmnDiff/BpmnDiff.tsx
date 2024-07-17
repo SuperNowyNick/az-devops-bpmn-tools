@@ -11,7 +11,7 @@ import "azure-devops-ui/Core/override.css";
 import "./BpmnDiff.scss";
 
 import BpmnDiffDetailsPanel from "./BpmnDiffDetailsPanel";
-import ReactBpmn, { BpmnMethods, BpmnStyle } from "../ReactBpmn/ReactBpmn";
+import ReactBpmn, { BpmnMethods, BpmnStyle, Viewbox } from "../ReactBpmn/ReactBpmn";
 
 import BpmnModdle from "bpmn-moddle";
 import bpmnCompare, { BpmnDiff } from "../bpmn-compare/bpmn-compare";
@@ -105,6 +105,21 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     );
 
     const HeaderCommandBarItems: IHeaderCommandBarItem[] = [
+        {
+            iconProps: {
+                iconName: "Home",
+            },
+            id: "bpmnViewReset",
+            important: true,
+            subtle: true,
+            onActivate: () => {
+                (childRef1.current as BpmnMethods | null)?.resetView();
+                (childRef2.current as BpmnMethods | null)?.resetView();
+            },
+            tooltipProps: {
+                text: "Reset view",
+            },
+        },
         {
             iconProps: {
                 iconName: "Lightbulb",

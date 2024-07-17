@@ -20,6 +20,7 @@ export interface BpmnStyle {
 export interface BpmnMethods {
   navigate(viewbox: Viewbox): void;
   getViewbox(): Viewbox;
+  resetView(): void;
 }
 
 export interface Viewbox {
@@ -50,6 +51,9 @@ const ReactBpmn = memo(
         },
         getViewbox() {
           return bpmnViewer.get('canvas').viewbox() as Viewbox
+        },
+        resetView() {
+          bpmnViewer.get('canvas').zoom('fit-viewport');
         }
       }))
 
