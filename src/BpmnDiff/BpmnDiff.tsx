@@ -26,6 +26,10 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         undefined as BpmnDiff | undefined
     );
 
+    const [splitterDirection, setSplitterDirection] = React.useState(
+        SplitterDirection.Horizontal
+    )
+
     const [panelExpanded, setPanelExpanded] = React.useState(false);
 
     const loadDiff = async () => {
@@ -120,6 +124,21 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         },
         {
             iconProps: {
+                iconName: "View",
+            },
+            id: "changeSplitterDirection",
+            subtle: true,
+            onActivate: () => {
+                setSplitterDirection(splitterDirection == SplitterDirection.Horizontal
+                    ? SplitterDirection.Vertical
+                    : SplitterDirection.Horizontal)
+            },
+            tooltipProps: {
+                text: "Change splitter orientation",
+            },
+        },
+        {
+            iconProps: {
                 iconName: "Lightbulb",
             },
             id: "bpmnDiffDetails",
@@ -137,7 +156,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
             <Header commandBarItems={HeaderCommandBarItems} />
             <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
             <Splitter
-                splitterDirection={SplitterDirection.Horizontal}
+                splitterDirection={splitterDirection}
                 onRenderNearElement={nearElement}
                 onRenderFarElement={farElement}
                 onFixedSizeChanged={()=> {isNavigating = true; setTimeout(() => isNavigating = false, 50) }}
