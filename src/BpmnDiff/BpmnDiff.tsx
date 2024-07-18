@@ -115,8 +115,8 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
             onActivate: () => {
                 isNavigating = true;
                 (childRef1.current as BpmnMethods | null)?.resetView();
-                (childRef2.current as BpmnMethods | null)?.resetView();
                 isNavigating = false;
+                syncViewbox(childRef2, (childRef1.current as BpmnMethods | null)?.getViewbox());
             },
             tooltipProps: {
                 text: "Reset view",
