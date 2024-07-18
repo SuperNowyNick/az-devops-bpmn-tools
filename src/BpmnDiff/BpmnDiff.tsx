@@ -55,14 +55,12 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
             <div
                 style={{
                     padding: "15px",
+                    overflow: "hidden",
                     width: "100%",
-                    height: "100%",
-                    overflow: "clip",
-                    alignItems: "stretch",
-                    display: "flex",
+                    height: "100%"
                 }}
             >
-                <div style={{ width: "8000px" }}>
+                <div style={{ minWidth: "100vw", height: "100vh" }}>
                     <ReactBpmn
                         ref={childRef1}
                         diagramXML={props.bpmn1}
@@ -84,12 +82,10 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                     padding: "15px",
                     width: "100%",
                     height: "100%",
-                    overflow: "clip",
-                    alignItems: "stretch",
-                    display: "flex",
+                    overflow: "hidden",
                 }}
             >
-                <div style={{ width: "8000px" }}>
+                <div style={{ minWidth: "100vw", height: "100vh" }}>
                     <ReactBpmn
                         ref={childRef2}
                         diagramXML={props.bpmn2}
@@ -113,8 +109,10 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
             important: true,
             subtle: true,
             onActivate: () => {
+                isNavigating = true;
                 (childRef1.current as BpmnMethods | null)?.resetView();
                 (childRef2.current as BpmnMethods | null)?.resetView();
+                isNavigating = false;
             },
             tooltipProps: {
                 text: "Reset view",
@@ -137,12 +135,15 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     return (
         <Page className="bpmn-preview">
             <Header commandBarItems={HeaderCommandBarItems} />
+            <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
             <Splitter
                 splitterDirection={SplitterDirection.Horizontal}
                 onRenderNearElement={nearElement}
                 onRenderFarElement={farElement}
+                onFixedSizeChanged={()=> {isNavigating = true; setTimeout(() => isNavigating = false, 50) }}
             />
             { panelExpanded && <BpmnDiffDetailsPanel changes={changes} onClose={() => setPanelExpanded(false)}/>}
+            </div>
         </Page>
     );
 }
