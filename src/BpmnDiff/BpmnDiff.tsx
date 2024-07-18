@@ -54,6 +54,27 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         isNavigating = false;
     };
 
+    const focusOnElement = (id: string, removed?: boolean) => {
+        if (isNavigating) return;
+        isNavigating = true;
+        const bpmnViewer = (removed ? childRef2.current : childRef1.current) as unknown as BpmnMethods;
+        const viewBox = bpmnViewer.focusOn(id);
+        const secondViewer = (removed ? childRef1.current : childRef2.current) as unknown as BpmnMethods;
+        secondViewer.navigate(viewBox);
+        isNavigating = false;
+    }
+
+    const fitViewboxes = () => {
+        if (isNavigating) return;
+        isNavigating = true;
+
+        const viewer1 = childRef1.current as unknown as BpmnMethods;
+        const viewer2 = childRef2.current as unknown as BpmnMethods;
+        viewer1.fitToContainer();
+        viewer2.fitToContainer();
+        isNavigating = false;
+    }
+
     const nearElement = React.useCallback(
         () => (
             <div
@@ -64,7 +85,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                     height: "100%"
                 }}
             >
-                <div style={{ minWidth: "100vw", height: "100vh" }}>
+                <div style={{ minWidth: "100%", height: "100%" }}>
                     <ReactBpmn
                         ref={childRef1}
                         diagramXML={props.bpmn1}
@@ -89,7 +110,7 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                     overflow: "hidden",
                 }}
             >
-                <div style={{ minWidth: "100vw", height: "100vh" }}>
+                <div style={{ minWidth: "100%", height: "100%" }}>
                     <ReactBpmn
                         ref={childRef2}
                         diagramXML={props.bpmn2}
@@ -159,9 +180,9 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                 splitterDirection={splitterDirection}
                 onRenderNearElement={nearElement}
                 onRenderFarElement={farElement}
-                onFixedSizeChanged={()=> {isNavigating = true; setTimeout(() => isNavigating = false, 50) }}
+                onFixedSizeChanged={()=> {isNavigating = true; setTimeout(() => {isNavigating = false; fitViewboxes() }, 50) }}
             />
-            { panelExpanded && <BpmnDiffDetailsPanel changes={changes} onClose={() => setPanelExpanded(false)}/>}
+            { panelExpanded && <BpmnDiffDetailsPanel changes={changes} focusOn={(id: string, removed?: boolean) => { focusOnElement(id, removed);} } onClose={() => setPanelExpanded(false)}/>}
             </div>
         </Page>
     );

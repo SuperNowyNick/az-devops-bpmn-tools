@@ -21,10 +21,12 @@ export interface BpmnMethods {
   navigate(viewbox: Viewbox): void;
   getViewbox(): Viewbox;
   resetView(): void;
+  focusOn(id: string): Viewbox,
+  fitToContainer(): void
 }
 
 export interface Viewbox {
-  [x: string | number | symbol]: unknown;
+  [x: string | number | symbol]: unknown | any;
 }
 
 enum CHANGE_MARKERS {
@@ -47,6 +49,10 @@ const ReactBpmn = memo(
     useImperativeHandle(ref,
       (): BpmnMethods => ({
         navigate(viewbox) {
+          if(viewbox.height == Infinity || viewbox.width == Infinity || viewbox.scale == 0) return;
+          const currentViewbox = bpmnViewer.get('canvas').viewbox();
+          viewbox.width = currentViewbox.outer.width;
+          viewbox.height = currentViewbox.outer.height;
           bpmnViewer.get('canvas').viewbox(viewbox);
         },
         getViewbox() {
@@ -54,6 +60,27 @@ const ReactBpmn = memo(
         },
         resetView() {
           bpmnViewer.get('canvas').zoom('fit-viewport');
+        },
+        focusOn(id: string) {
+          const element = bpmnViewer.get('elementRegistry')._elements[id].element;
+          let oldViewbox = bpmnViewer.get('canvas').viewbox();
+          const point = element.waypoints
+            ? { x: element.waypoints[0].x, y: element.waypoints[0].y }
+            : { x: element.x + element.width/2, y: element.y + element.height/2 };
+
+          oldViewbox.x = point.x - oldViewbox.outer.width/2;
+          oldViewbox.y = point.y - oldViewbox.outer.height/2;
+          oldViewbox.width = oldViewbox.outer.width;
+          oldViewbox.height = oldViewbox.outer.height;
+
+          bpmnViewer.get('canvas').viewbox(oldViewbox);
+          return oldViewbox;
+        },
+        fitToContainer() {
+          let oldViewbox = bpmnViewer.get('canvas').viewbox();
+          oldViewbox.width = oldViewbox.outer.width;
+          oldViewbox.height = oldViewbox.outer.height;
+          bpmnViewer.get('canvas').viewbox(oldViewbox);
         }
       }))
 
