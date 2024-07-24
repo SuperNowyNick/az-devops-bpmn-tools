@@ -30,8 +30,6 @@ const fileResolverInit = async (
 
     let fileResolution = { file: null as any, previousFile: null as any};
 
-    console.log(pageRoute);
-    console.log(params);
     switch (pageRoute.id) {
         case PullRequestRouteID:
             fileResolution= await loadPreviousPullRequestFile(pageRoute,params);

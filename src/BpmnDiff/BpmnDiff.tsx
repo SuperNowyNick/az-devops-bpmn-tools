@@ -11,7 +11,7 @@ import "azure-devops-ui/Core/override.css";
 import "./BpmnDiff.scss";
 
 import BpmnDiffDetailsPanel from "./BpmnDiffDetailsPanel";
-import ReactBpmn, { BpmnMethods, BpmnStyle } from "../ReactBpmn/ReactBpmn";
+import ReactBpmn, { BpmnMethods, BpmnStyle, Viewbox } from "../ReactBpmn/ReactBpmn";
 
 import BpmnModdle from "bpmn-moddle";
 import bpmnCompare, { BpmnDiff } from "../bpmn-compare/bpmn-compare";
@@ -25,6 +25,10 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     const [changes, setChanges] = React.useState(
         undefined as BpmnDiff | undefined
     );
+
+    const [splitterDirection, setSplitterDirection] = React.useState(
+        SplitterDirection.Horizontal
+    )
 
     const [panelExpanded, setPanelExpanded] = React.useState(false);
 
@@ -50,19 +54,38 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
         isNavigating = false;
     };
 
+    const focusOnElement = (id: string, removed?: boolean) => {
+        if (isNavigating) return;
+        isNavigating = true;
+        const bpmnViewer = (removed ? childRef2.current : childRef1.current) as unknown as BpmnMethods;
+        const viewBox = bpmnViewer.focusOn(id);
+        const secondViewer = (removed ? childRef1.current : childRef2.current) as unknown as BpmnMethods;
+        secondViewer.navigate(viewBox);
+        isNavigating = false;
+    }
+
+    const fitViewboxes = () => {
+        if (isNavigating) return;
+        isNavigating = true;
+
+        const viewer1 = childRef1.current as unknown as BpmnMethods;
+        const viewer2 = childRef2.current as unknown as BpmnMethods;
+        viewer1.fitToContainer();
+        viewer2.fitToContainer();
+        isNavigating = false;
+    }
+
     const nearElement = React.useCallback(
         () => (
             <div
                 style={{
                     padding: "15px",
+                    overflow: "hidden",
                     width: "100%",
-                    height: "100%",
-                    overflow: "clip",
-                    alignItems: "stretch",
-                    display: "flex",
+                    height: "100%"
                 }}
             >
-                <div style={{ width: "8000px" }}>
+                <div style={{ minWidth: "100%", height: "100%" }}>
                     <ReactBpmn
                         ref={childRef1}
                         diagramXML={props.bpmn1}
@@ -84,12 +107,10 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
                     padding: "15px",
                     width: "100%",
                     height: "100%",
-                    overflow: "clip",
-                    alignItems: "stretch",
-                    display: "flex",
+                    overflow: "hidden",
                 }}
             >
-                <div style={{ width: "8000px" }}>
+                <div style={{ minWidth: "100%", height: "100%" }}>
                     <ReactBpmn
                         ref={childRef2}
                         diagramXML={props.bpmn2}
@@ -107,6 +128,38 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     const HeaderCommandBarItems: IHeaderCommandBarItem[] = [
         {
             iconProps: {
+                iconName: "Home",
+            },
+            id: "bpmnViewReset",
+            important: true,
+            subtle: true,
+            onActivate: () => {
+                isNavigating = true;
+                (childRef1.current as BpmnMethods | null)?.resetView();
+                isNavigating = false;
+                syncViewbox(childRef2, (childRef1.current as BpmnMethods | null)?.getViewbox());
+            },
+            tooltipProps: {
+                text: "Reset view",
+            },
+        },
+        {
+            iconProps: {
+                iconName: "View",
+            },
+            id: "changeSplitterDirection",
+            subtle: true,
+            onActivate: () => {
+                setSplitterDirection(splitterDirection == SplitterDirection.Horizontal
+                    ? SplitterDirection.Vertical
+                    : SplitterDirection.Horizontal)
+            },
+            tooltipProps: {
+                text: "Change splitter orientation",
+            },
+        },
+        {
+            iconProps: {
                 iconName: "Lightbulb",
             },
             id: "bpmnDiffDetails",
@@ -122,12 +175,15 @@ function BpmnDiff(props: { bpmn1: string; bpmn2: string; style: BpmnStyle }) {
     return (
         <Page className="bpmn-preview">
             <Header commandBarItems={HeaderCommandBarItems} />
+            <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
             <Splitter
-                splitterDirection={SplitterDirection.Horizontal}
+                splitterDirection={splitterDirection}
                 onRenderNearElement={nearElement}
                 onRenderFarElement={farElement}
+                onFixedSizeChanged={()=> {isNavigating = true; setTimeout(() => {isNavigating = false; fitViewboxes() }, 50) }}
             />
-            { panelExpanded && <BpmnDiffDetailsPanel changes={changes} onClose={() => setPanelExpanded(false)}/>}
+            { panelExpanded && <BpmnDiffDetailsPanel changes={changes} focusOn={(id: string, removed?: boolean) => { focusOnElement(id, removed);} } onClose={() => setPanelExpanded(false)}/>}
+            </div>
         </Page>
     );
 }
