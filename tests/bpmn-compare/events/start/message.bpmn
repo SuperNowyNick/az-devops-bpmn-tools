@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0jbwsjd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.17.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <bpmn:process id="Process_0clpc7w" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:endEvent id="Event_034t8qp">
+      <bpmn:incoming>Flow_0a7fv2g</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0a7fv2g" sourceRef="Event_1tje9bn" targetRef="Event_034t8qp" />
+    <bpmn:startEvent id="Event_1tje9bn">
+      <bpmn:outgoing>Flow_0a7fv2g</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_055dud7" messageRef="Message_3m3ekk9" />
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:message id="Message_3m3ekk9" name="Message_3m3ekk9" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0clpc7w">
+      <bpmndi:BPMNShape id="Event_034t8qp_di" bpmnElement="Event_034t8qp">
+        <dc:Bounds x="372" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0jq486f_di" bpmnElement="Event_1tje9bn">
+        <dc:Bounds x="152" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0a7fv2g_di" bpmnElement="Flow_0a7fv2g">
+        <di:waypoint x="188" y="100" />
+        <di:waypoint x="372" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

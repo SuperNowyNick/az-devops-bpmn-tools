@@ -8,7 +8,7 @@ import { getChangeItemProvider, renderRow } from "./BpmnDiffChange";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { BpmnDiff } from "../bpmn-compare/bpmn-compare";
 
-const BpmnDiffDetailsPanel = (props: { onClose: () => void, changes : BpmnDiff | undefined }) => {
+const BpmnDiffDetailsPanel = (props: { onClose: () => void, changes : BpmnDiff | undefined, focusOn: (id: string, removed?: boolean) => void }) => {
 
     let addedItemProvider = props.changes
         ? getChangeItemProvider(props.changes.added)
@@ -36,6 +36,7 @@ const BpmnDiffDetailsPanel = (props: { onClose: () => void, changes : BpmnDiff |
                 ariaLabel="Tree"
                 renderRow={renderRow}
                 width="100%"
+                onSelect={(e, row) => props.focusOn(row.data.id)}
                 itemProvider={addedItemProvider}
             />
             <span className="title-s">Changed:</span>
@@ -43,6 +44,7 @@ const BpmnDiffDetailsPanel = (props: { onClose: () => void, changes : BpmnDiff |
                 ariaLabel="Tree"
                 renderRow={renderRow}
                 width="100%"
+                onSelect={(e, row) => props.focusOn(row.data.id)}
                 itemProvider={changedItemProvider}
             />
             <span className="title-s">Removed:</span>
@@ -50,6 +52,7 @@ const BpmnDiffDetailsPanel = (props: { onClose: () => void, changes : BpmnDiff |
                 ariaLabel="Tree"
                 renderRow={renderRow}
                 width="100%"
+                onSelect={(e, row) => props.focusOn(row.data.id, true)}
                 itemProvider={removedItemProvider}
             />
             </div>

@@ -3,6 +3,7 @@ import { IListItemDetails, ListItem } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import React from "react";
 import { ModifiedElement } from "../bpmn-compare/bpmn-compare";
+import { JSONTree } from 'react-json-tree';
 
 const parseAttributesChanges = (attrs) => {
     let attributes = [] as any[];
@@ -61,15 +62,34 @@ const getIconFromType = (type) => {
     }
 }
 
+const theme = {
+    base00: '#00000000',
+}
+
+const renderValue = (value: string, className: string) => {
+    try{
+        let jsonData = typeof(value) == "string" ? JSON.parse(value) : value;
+        return (<div className={className}><JSONTree data={jsonData} hideRoot={true} theme={theme}
+            labelRenderer={([key]) => <strong className={className}>{key}</strong>}
+            valueRenderer={(raw) => <em className={className}>{raw}</em>}
+        /></div>)
+    }
+    catch
+    {
+        if(typeof(value) == "string")
+            return (<span className={className}>{value}</span>)
+    }
+}
+
 const AttributeChangeDetails = ({ attributeChange }) => {
     return (
-    <div className="flex-row">
-        <Icon iconName={getIconFromType(attributeChange.type)} size={IconSize.small}/>
-        <span className="fontSizeMS font-size-ms secondary-text wrap-text">
+    <div className="flex-row flex-start">
+        <Icon className="margin-4" iconName={getIconFromType(attributeChange.type)} size={IconSize.small}/>
+        <div className="fontSizeMS font-size-ms secondary-text wrap-text">
             <span className="margin-4">{attributeChange.key}:</span>
-            {attributeChange.newValue && <span className="margin-4 property-added">{JSON.stringify(attributeChange.newValue)}</span>}
-            {attributeChange.oldValue && <span className="margin-4 property-removed">{JSON.stringify(attributeChange.oldValue)}</span>}
-        </span>
+            {attributeChange.newValue && renderValue(attributeChange.newValue, "margin-4 property-added")}
+            {attributeChange.oldValue && renderValue(attributeChange.oldValue, "margin-4 property-removed")}
+        </div>
     </div>
 );
 }
